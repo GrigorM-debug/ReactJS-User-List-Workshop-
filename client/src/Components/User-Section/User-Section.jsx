@@ -42,6 +42,10 @@ export default function UserSection() {
         setshowCreateEditUser(true);
     }
 
+    const handleCloseButtonClick = () => {
+        setshowCreateEditUser(false);
+    }
+
     return (
         <main className="main">
             <section className="card users-container">
@@ -53,8 +57,8 @@ export default function UserSection() {
                 
                 {showFetchError && <FetchingError/>}
                
-               {showCreateEditUser && <CreateEditUser/>}
-               
+               {showCreateEditUser && <CreateEditUser onClose={handleCloseButtonClick}/>}
+
                 <UserList
                     users={users}
                 />
