@@ -5,13 +5,12 @@ export default function UserList({
     users,
     onDelete,
     showUserDetails,
-    showEdit
+    onEdit 
 }) {
     return (
         <div className="table-wrapper">
-
             <table className="table">
-                <THead/>
+                <THead />
                 <tbody>
                     {users.map(user => (
                         <UserListItem
@@ -19,11 +18,11 @@ export default function UserList({
                             user={user}
                             onDelete={onDelete}
                             showUserDetails={showUserDetails}
-                            showEdit={showEdit}
+                            onEdit={onEdit} 
                         />
                     ))}
                 </tbody>
             </table>
         </div>
     );
-};
+}

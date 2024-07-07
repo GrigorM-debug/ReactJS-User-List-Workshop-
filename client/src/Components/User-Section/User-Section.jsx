@@ -97,8 +97,8 @@ export default function UserSection() {
     };
 
     const handleEditClick = (user) => {
-        setEditingUser(user);
         setShowCreateEditUser(true);
+        setEditingUser(user)
     };
 
 
@@ -180,6 +180,7 @@ export default function UserSection() {
                     onEdit={handleEditClick}
                     showUserDetails={handleUserDetails}
                 />
+
 
                 <button className="btn-add btn" onClick={handleAddButtonClick}>
                     Add new user

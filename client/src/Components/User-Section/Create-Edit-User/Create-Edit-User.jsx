@@ -15,6 +15,7 @@ export default function CreateEditUser({ onClose, onSubmit, user }) {
     });
 
     useEffect(() => {
+        //if we have user it means that we are editing. so we populated the data for the user we are editing
         if (user) {
             setFormData({
                 firstName: user.firstName,
