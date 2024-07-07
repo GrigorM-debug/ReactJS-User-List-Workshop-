@@ -7,31 +7,31 @@
     justify-content: center;
     align-items: center;
     background: #24292f;
-  }
-  
-  .logo {
+}
+
+.logo {
     font-size: 1.2rem;
     color: white;
-  }
-  
-  .logo .description {
+}
+
+.logo .description {
     margin-left: 10px;
-  }
-  
-  @media (max-width: 768px) {
+}
+
+@media (max-width: 768px) {
     .header {
-      padding: 0 5%;
-      height: 4rem;
+        padding: 0 5%;
+        height: 4rem;
     }
     .header .logo {
-      font-size: 1.2rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      text-align: center;
+        font-size: 1.2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
     }
     .logo .description {
-      font-size: 1rem;
-      margin-left: 0px;
+        font-size: 1rem;
+        margin-left: 0px;
     }
-  }
+}
