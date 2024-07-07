@@ -119,7 +119,16 @@ export default function UserSection() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(userData),
+                    body: JSON.stringify({...userData, 
+                        // createdAt: userData.createdAt,
+                        updatedAt: new Date().toISOString(),
+                        address: {
+                            country: userData.country,
+                            city: userData.city,
+                            street: userData.street,
+                            streetNumber: userData.streetNumber
+                        }
+                    }),
                 });
             } else {
                 await fetch(`${baseURL}/users`, {
@@ -127,7 +136,16 @@ export default function UserSection() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(userData),
+                    body: JSON.stringify({...userData, 
+                        createdAt: new Date().toISOString(),
+                        updatedAt: '',
+                        address: {
+                            country: userData.country,
+                            city: userData.city,
+                            street: userData.street,
+                            streetNumber: userData.streetNumber
+                        }
+                    }),
                 });
             }
             await fetchUsers();
