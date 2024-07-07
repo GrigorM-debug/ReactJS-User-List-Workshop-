@@ -17,114 +17,61 @@ export default function UserSection() {
     const [showNoUsersYet, setShowNoUsersYet] = useState(false);
     const [showFetchError, setShowFetchError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [showCreateEditUser, setshowCreateEditUser] = useState(false);
+    const [showCreateEditUser, setShowCreateEditUser] = useState(false);
     const [showDeleteUserById, setShowDeleteUserById] = useState(null);
-    const [showNoUsersFound, setNoUsersFound] = useState(false);
+    const [showNoUsersFound, setShowNoUsersFound] = useState(false);
     const [showUserDetailsById, setShowUserDetailsById] = useState(null);
+    const [editingUser, setEditingUser] = useState(null);
+
+    const fetchUsers = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`${baseURL}/users`);
+            const data = await response.json();
+            const usersData = Object.values(data);
+
+            if (usersData.length === 0) {
+                setShowNoUsersYet(true);
+            } else {
+                setUsers(usersData);
+            }
+        } catch (error) {
+            setShowFetchError(true);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        setIsLoading(true)
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`${baseURL}/users`);
-                const data = await response.json();
-                const usersData = Object.values(data);
-
-                if (usersData.length === 0) {
-                    setShowNoUsersYet(true);
-                }
-
-                setUsers(Object.values(data));
-            } catch (error) {
-                setShowFetchError(true);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchData();
+        fetchUsers();
     }, []);
 
     const handleAddButtonClick = () => {
-        setshowCreateEditUser(true);
-    }
+        setEditingUser(null);
+        setShowCreateEditUser(true);
+    };
 
     const handleCloseButtonClick = () => {
-        setshowCreateEditUser(false);
-    }
+        setShowCreateEditUser(false);
+    };
 
-    const handleSubmitClick = (e) => {
-        e.preventDefault();
-
-        const formData = e.target;
-
-        const newUser = {
-            firstName: formData['firstName'].value,
-            lastName: formData['lastName'].value,
-            email: formData['email'].value,
-            phoneNumber: formData['phoneNumber'].value,
-            createdAt: new Date().toISOString(),
-            imageUrl: formData['imageUrl'].value,
-            address: {
-                country: formData['country'].value,
-                city: formData['city'].value,
-                street: formData['street'].value,
-                streetNumber: formData['streetNumber'].value
-            }
-        }
-        
-        // Send the new user data to the server
-        setIsLoading(true);
-        fetch(`${baseURL}/users`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newUser),
-        })
-        .then((res) => res.json())
-        .then((data) => {
-            // Update the users state with the new user
-            setUsers((oldUsers) => [...oldUsers, newUser]);
-            alert('User added successfully');
-        })
-        .catch((error) => {
-            setShowFetchError(true);
-        })
-        .finally(() => {
-            setIsLoading(false);
-            setShowFetchError(false);
-        });
-
-        setshowCreateEditUser(false)
-    }
-
-    const onClickDeleteHandler = (userId) => {
+    const handleDeleteClick = (userId) => {
         setShowDeleteUserById(userId);
-    }
+    };
 
-    const onCloseDeleteHandler = () => {
+    const handleCloseDelete = () => {
         setShowDeleteUserById(null);
-    }
+    };
 
-    const onSubmitDeleteHandler = async (e) => {
-        e.preventDefault();
-
+    const handleSubmitDelete = async () => {
         const userId = showDeleteUserById;
-
-        setIsLoading(true);
-
         setIsLoading(true);
 
         try {
-            // Check if the user exists by making a GET request
             const response = await fetch(`${baseURL}/users/${userId}`);
-            
             if (!response.ok) {
-                // If the user does not exist, handle the error
                 if (response.status === 404) {
-                    setNoUsersFound(true);
-                    setIsLoading(false);
+                    setShowNoUsersFound(true);
                     alert('User does not exist');
                     return;
                 } else {
@@ -132,7 +79,6 @@ export default function UserSection() {
                 }
             }
 
-            // If the user exists, proceed with the DELETE request
             await fetch(`${baseURL}/users/${userId}`, {
                 method: 'DELETE',
                 headers: {
@@ -140,62 +86,107 @@ export default function UserSection() {
                 }
             });
 
-            // Handle successful deletion
             alert('User deleted successfully');
-            setShowDeleteUserById(false);
-
-            setUsers(oldUsers => oldUsers.filter(u=> u._id !== userId));
+            setUsers((oldUsers) => oldUsers.filter((u) => u._id !== userId));
+            setShowDeleteUserById(null);
         } catch (error) {
-            setNoUsersFound(true);
             alert('An error occurred');
         } finally {
             setIsLoading(false);
         }
+    };
 
-        console.log(users)
-    }   
+    const handleEditClick = (user) => {
+        setEditingUser(user);
+        setShowCreateEditUser(true);
+    };
 
-    const showUserDetailsBydIDHandler = (userId) => {
+
+    const handleUserDetails = (userId) => {
         setShowUserDetailsById(userId);
-    }
+    };
 
-    const closeUserDetailsByIdHandler = () => {
+    const closeUserDetails = () => {
         setShowUserDetailsById(null);
-    }
+    };
+
+    const handleFormSubmit = async (userData) => {
+        setIsLoading(true);
+        try {
+            if (editingUser) {
+                await fetch(`${baseURL}/users/${editingUser._id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData),
+                });
+            } else {
+                await fetch(`${baseURL}/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData),
+                });
+            }
+            await fetchUsers();
+            setShowCreateEditUser(false);
+        } catch (error) {
+            console.error('Error submitting form:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <main className="main">
             <section className="card users-container">
-                <Search/>
+                <Search />
                 
                 {isLoading && <LoadingSpinner />}
                 
-                {showNoUsersYet && <NoUsersAddedYetContainer/>}
+                {showNoUsersYet && <NoUsersAddedYetContainer />}
                 
-                {showNoUsersFound && <NotFound/>}
+                {showNoUsersFound && <NotFound />}
+                
+                {showFetchError && <FetchingError />}
+                
+                {showCreateEditUser && (
+                    <CreateEditUser
+                        user={editingUser}
+                        onClose={handleCloseButtonClick}
+                        onSubmit={handleFormSubmit}
+                    />
+                )}
 
-                {showFetchError && <FetchingError/>}
-               
-                {showCreateEditUser && <CreateEditUser onClose={handleCloseButtonClick} onSubmit={handleSubmitClick}/>}
+                {showDeleteUserById && (
+                    <UserDelete
+                        onClose={handleCloseDelete}
+                        onSubmit={handleSubmitDelete}
+                    />
+                )}
 
-                {showDeleteUserById && <UserDelete onClose={onCloseDeleteHandler} onSubmit={onSubmitDeleteHandler}/>}
-
-                {showUserDetailsById && <UserDetails 
-                                            user={users.find(u=> u._id === showUserDetailsById)}
-                                            onClose={closeUserDetailsByIdHandler}
-                                            />}
+                {showUserDetailsById && (
+                    <UserDetails
+                        user={users.find((u) => u._id === showUserDetailsById)}
+                        onClose={closeUserDetails}
+                    />
+                )}
 
                 <UserList
                     users={users}
-                    onDelete={onClickDeleteHandler}
-                    onClose={onCloseDeleteHandler}
-                    showUserDetails={showUserDetailsBydIDHandler}
+                    onDelete={handleDeleteClick}
+                    onEdit={handleEditClick}
+                    showUserDetails={handleUserDetails}
                 />
 
-                <button className="btn-add btn" onClick={handleAddButtonClick}>Add new user</button>
+                <button className="btn-add btn" onClick={handleAddButtonClick}>
+                    Add new user
+                </button>
 
-                <Pagination/>
+                <Pagination />
             </section>
         </main>
     );
-};
+}

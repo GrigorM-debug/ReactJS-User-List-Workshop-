@@ -4,7 +4,8 @@ import UserListItem from "../User-List-Item/User-List-Item";
 export default function UserList({
     users,
     onDelete,
-    showUserDetails
+    showUserDetails,
+    showEdit
 }) {
     return (
         <div className="table-wrapper">
@@ -18,6 +19,7 @@ export default function UserList({
                             user={user}
                             onDelete={onDelete}
                             showUserDetails={showUserDetails}
+                            showEdit={showEdit}
                         />
                     ))}
                 </tbody>

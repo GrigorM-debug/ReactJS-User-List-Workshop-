@@ -3,7 +3,8 @@ import parseDate from "../../../util/parseDate";
 export default function UserListItem({
     user,
     onDelete,
-    showUserDetails
+    showUserDetails,
+    showEdit
 }) {
     return (
         <tr>
@@ -20,7 +21,7 @@ export default function UserListItem({
             <td>{user.phoneNumber}</td>
             <td>{parseDate(user.createdAt)}</td>
             <td className="actions">
-            <button className="btn edit-btn" title="Edit">
+            <button className="btn edit-btn" title="Edit" onClick={() => showEdit(user)}>
                 <svg
                 aria-hidden="true"
                 focusable="false"
