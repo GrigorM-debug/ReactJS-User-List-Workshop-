@@ -181,16 +181,21 @@ export default function UserSection() {
             filteredUsersArray = users.filter(u => new RegExp(seachValue, 'i').test(u.email));
         } else if (searchCriteria === 'phone'){
             filteredUsersArray = users.filter(u => new RegExp(seachValue, 'i').test(u.phone));
-        } else {
+        } 
+        
+        if(filteredUsersArray.length === 0) {
             setShowNoUsersFound(true);
-        }   
+        } else {
+            setShowNoUsersFound(false);
+        }
 
-        console.log(filteredUsers)
+        console.log(filteredUsersArray)
 
         setUsers(filteredUsersArray);
     }
 
     const searchCloseButtonHandler = () => {
+        setUsers(users)
         setSearchCriteria('');
         setSearchValue('');
     }
