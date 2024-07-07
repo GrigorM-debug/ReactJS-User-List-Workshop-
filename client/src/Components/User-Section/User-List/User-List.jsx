@@ -2,7 +2,8 @@ import THead from "../../THead/THead";
 import UserListItem from "../User-List-Item/User-List-Item";
 
 export default function UserList({
-    users
+    users,
+    onDelete
 }) {
     return (
         <div className="table-wrapper">
@@ -14,6 +15,7 @@ export default function UserList({
                         <UserListItem
                             key={user._id}
                             user={user}
+                            onDelete={onDelete}
                         />
                     ))}
                 </tbody>

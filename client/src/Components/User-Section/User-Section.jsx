@@ -6,6 +6,8 @@ import NoUsersAddedYetContainer from "../NoUsersAddedYet/NoUsersAddedYetContaine
 import FetchingError from "../FetchingError/FetchingError";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import CreateEditUser from "./Create-Edit-User/Create-Edit-User";
+import UserDelete from "./UserDelete/UserDelete";
+import NotFound from "../NotFound/NotFound";
 
 export default function UserSection() {
     const baseURL = 'http://localhost:3030/jsonstore';
@@ -15,6 +17,8 @@ export default function UserSection() {
     const [showFetchError, setShowFetchError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showCreateEditUser, setshowCreateEditUser] = useState(false);
+    const [showDeleteUserById, setShowDeleteUserById] = useState(null);
+    const [showNoUsersFound, setNoUsersFound] = useState(false);
 
     useEffect(() => {
         setIsLoading(true)
@@ -92,6 +96,62 @@ export default function UserSection() {
         setshowCreateEditUser(false)
     }
 
+    const onClickDeleteHandler = (userId) => {
+        setShowDeleteUserById(userId);
+    }
+
+    const onCloseDeleteHandler = () => {
+        setShowDeleteUserById(null);
+    }
+
+    const onSubmitDeleteHandler = async (e) => {
+        e.preventDefault();
+
+        const userId = showDeleteUserById;
+
+        setIsLoading(true);
+
+        setIsLoading(true);
+
+        try {
+            // Check if the user exists by making a GET request
+            const response = await fetch(`${baseURL}/users/${userId}`);
+            
+            if (!response.ok) {
+                // If the user does not exist, handle the error
+                if (response.status === 404) {
+                    setNoUsersFound(true);
+                    setIsLoading(false);
+                    alert('User does not exist');
+                    return;
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            }
+
+            // If the user exists, proceed with the DELETE request
+            await fetch(`${baseURL}/users/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-type': 'application/json'
+                }
+            });
+
+            // Handle successful deletion
+            alert('User deleted successfully');
+            setShowDeleteUserById(false);
+
+            setUsers(oldUsers => oldUsers.filter(u=> u._id !== userId));
+        } catch (error) {
+            setNoUsersFound(true);
+            alert('An error occurred');
+        } finally {
+            setIsLoading(false);
+        }
+
+        console.log(users)
+    }   
+
     return (
         <main className="main">
             <section className="card users-container">
@@ -101,12 +161,18 @@ export default function UserSection() {
                 
                 {showNoUsersYet && <NoUsersAddedYetContainer/>}
                 
+                {showNoUsersFound && <NotFound/>}
+
                 {showFetchError && <FetchingError/>}
                
                {showCreateEditUser && <CreateEditUser onClose={handleCloseButtonClick} onSubmit={handleSubmitClick}/>}
 
+                {showDeleteUserById && <UserDelete onClose={onCloseDeleteHandler} onSubmit={onSubmitDeleteHandler}/>}
+
                 <UserList
                     users={users}
+                    onDelete={onClickDeleteHandler}
+                    onClose={onCloseDeleteHandler}
                 />
 
                 <button className="btn-add btn" onClick={handleAddButtonClick}>Add new user</button>
