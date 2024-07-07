@@ -2,7 +2,8 @@ import parseDate from "../../../util/parseDate";
 
 export default function UserListItem({
     user,
-    onDelete
+    onDelete,
+    showUserDetails
 }) {
     return (
         <tr>
@@ -53,7 +54,7 @@ export default function UserListItem({
                 ></path>
                 </svg>
             </button>
-            <button className="btn info-btn" title="Info">
+            <button className="btn info-btn" title="Info" onClick={() => showUserDetails(user._id)}>
                 <svg
                 aria-hidden="true"
                 focusable="false"

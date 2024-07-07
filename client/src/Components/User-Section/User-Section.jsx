@@ -8,6 +8,7 @@ import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import CreateEditUser from "./Create-Edit-User/Create-Edit-User";
 import UserDelete from "./UserDelete/UserDelete";
 import NotFound from "../NotFound/NotFound";
+import UserDetails from "./UserDetails/UserDetails";
 
 export default function UserSection() {
     const baseURL = 'http://localhost:3030/jsonstore';
@@ -19,6 +20,7 @@ export default function UserSection() {
     const [showCreateEditUser, setshowCreateEditUser] = useState(false);
     const [showDeleteUserById, setShowDeleteUserById] = useState(null);
     const [showNoUsersFound, setNoUsersFound] = useState(false);
+    const [showUserDetailsById, setShowUserDetailsById] = useState(null);
 
     useEffect(() => {
         setIsLoading(true)
@@ -153,6 +155,14 @@ export default function UserSection() {
         console.log(users)
     }   
 
+    const showUserDetailsBydIDHandler = (userId) => {
+        setShowUserDetailsById(userId);
+    }
+
+    const closeUserDetailsByIdHandler = () => {
+        setShowUserDetailsById(null);
+    }
+
     return (
         <main className="main">
             <section className="card users-container">
@@ -166,14 +176,20 @@ export default function UserSection() {
 
                 {showFetchError && <FetchingError/>}
                
-               {showCreateEditUser && <CreateEditUser onClose={handleCloseButtonClick} onSubmit={handleSubmitClick}/>}
+                {showCreateEditUser && <CreateEditUser onClose={handleCloseButtonClick} onSubmit={handleSubmitClick}/>}
 
                 {showDeleteUserById && <UserDelete onClose={onCloseDeleteHandler} onSubmit={onSubmitDeleteHandler}/>}
+
+                {showUserDetailsById && <UserDetails 
+                                            user={users.find(u=> u._id === showUserDetailsById)}
+                                            onClose={closeUserDetailsByIdHandler}
+                                            />}
 
                 <UserList
                     users={users}
                     onDelete={onClickDeleteHandler}
                     onClose={onCloseDeleteHandler}
+                    showUserDetails={showUserDetailsBydIDHandler}
                 />
 
                 <button className="btn-add btn" onClick={handleAddButtonClick}>Add new user</button>
