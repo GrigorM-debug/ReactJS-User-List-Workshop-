@@ -84,6 +84,7 @@ export default function UserSection() {
         .then((data) => {
             // Update the users state with the new user
             setUsers((oldUsers) => [...oldUsers, newUser]);
+            alert('User added successfully');
         })
         .catch((error) => {
             setShowFetchError(true);
