@@ -22,6 +22,9 @@ export default function UserSection() {
     const [showNoUsersFound, setShowNoUsersFound] = useState(false);
     const [showUserDetailsById, setShowUserDetailsById] = useState(null);
     const [editingUser, setEditingUser] = useState(null);
+    const [searchCriteria, setSearchCriteria] = useState('');
+    const [seachValue, setSearchValue] = useState('');
+    const [filteredUsers, setFilteredUsers] = useState([]);
 
     const fetchUsers = async () => {
         setIsLoading(true);
@@ -156,11 +159,52 @@ export default function UserSection() {
             setIsLoading(false);
         }
     };
+    
+    const handleSelectedCriteriaSeach = (e) => {
+        const criteria = e.target.value;
+
+        setSearchCriteria(criteria);
+    }
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        
+        setSearchValue(e.target.value);
+
+        let filteredUsersArray = [];
+
+        if(searchCriteria === 'firstName') {
+            filteredUsersArray = users.filter(u => new RegExp(seachValue, 'i').test(u.firstName));
+        } else if (searchCriteria === 'lastName') {
+            filteredUsersArray = users.filter(u => new RegExp(seachValue, 'i').test(u.lastName));
+        } else if (searchCriteria === 'email') {
+            filteredUsersArray = users.filter(u => new RegExp(seachValue, 'i').test(u.email));
+        } else if (searchCriteria === 'phone'){
+            filteredUsersArray = users.filter(u => new RegExp(seachValue, 'i').test(u.phone));
+        } else {
+            setShowNoUsersFound(true);
+        }   
+
+        console.log(filteredUsers)
+
+        setUsers(filteredUsersArray);
+    }
+
+    const searchCloseButtonHandler = () => {
+        setSearchCriteria('');
+        setSearchValue('');
+    }
 
     return (
         <main className="main">
             <section className="card users-container">
-                <Search />
+                <Search 
+                    handleSelectedCriteriaSeach={handleSelectedCriteriaSeach}
+                    handleSearchSubmit={handleSearchSubmit}
+                    selectedCriteria={searchCriteria}
+                    seachValue={seachValue}
+                    onClose={searchCloseButtonHandler}
+                />
                 
                 {isLoading && <LoadingSpinner />}
                 

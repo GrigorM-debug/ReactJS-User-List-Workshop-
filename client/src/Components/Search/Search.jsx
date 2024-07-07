@@ -1,6 +1,14 @@
-export default function Search() {
+import CloseButton from "./CloseButton";
+
+export default function Search({
+    handleSelectedCriteriaSeach,
+    handleSearchSubmit,
+    selectedCriteria,
+    seachValue,
+    onClose
+}) {
     return (
-        <form className="search-form">
+        <form className="search-form" onSubmit={handleSearchSubmit}>
             <h2>
                 <svg
                 aria-hidden="true"
@@ -24,23 +32,24 @@ export default function Search() {
                 type="text"
                 placeholder="Please, select the search criteria"
                 name="search"
+                value={seachValue}
+                onChange={handleSearchSubmit}
                 />
         
-                <button className="btn close-btn">
-                <i className="fa-solid fa-xmark" />
-                </button>
+                {seachValue && <CloseButton onClose={onClose}/>}
+
                 <button className="btn" title="Please, select the search criteria">
                 <i className="fa-solid fa-magnifying-glass" />
                 </button>
             </div>
             <div className="filter">
                 <span>Search Criteria:</span>
-                <select name="criteria" className="criteria">
-                <option value="">Not selected</option>
-                <option value="">First Name</option>
-                <option value="">Last Name</option>
-                <option value="">Email</option>
-                <option value="">Phone</option>
+                <select value={selectedCriteria} name="criteria" className="criteria" onChange={handleSelectedCriteriaSeach}>
+                    <option value="">Not selected </option>
+                    <option value="firstName">First Name</option>
+                    <option value="lastName">Last Name</option>
+                    <option value="email">Email</option>
+                    <option value="phone">Phone</option>
                 </select>
             </div>
         </form>
