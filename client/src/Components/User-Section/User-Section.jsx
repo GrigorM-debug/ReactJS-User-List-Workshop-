@@ -17,6 +17,7 @@ export default function UserSection() {
     const [showCreateEditUser, setshowCreateEditUser] = useState(false);
 
     useEffect(() => {
+        setIsLoading(true)
         const fetchData = async () => {
             try {
                 const response = await fetch(`${baseURL}/users`);
@@ -46,6 +47,51 @@ export default function UserSection() {
         setshowCreateEditUser(false);
     }
 
+    const handleSubmitClick = (e) => {
+        e.preventDefault();
+
+        const formData = e.target;
+
+        const newUser = {
+            firstName: formData['firstName'].value,
+            lastName: formData['lastName'].value,
+            email: formData['email'].value,
+            phoneNumber: formData['phoneNumber'].value,
+            createdAt: new Date().toISOString(),
+            imageUrl: formData['imageUrl'].value,
+            address: {
+                country: formData['country'].value,
+                city: formData['city'].value,
+                street: formData['street'].value,
+                streetNumber: formData['streetNumber'].value
+            }
+        }
+        
+        // Send the new user data to the server
+        setIsLoading(true);
+        fetch(`${baseURL}/users`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newUser),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            // Update the users state with the new user
+            setUsers((oldUsers) => [...oldUsers, newUser]);
+        })
+        .catch((error) => {
+            setShowFetchError(true);
+        })
+        .finally(() => {
+            setIsLoading(false);
+            setShowFetchError(false);
+        });
+
+        setshowCreateEditUser(false)
+    }
+
     return (
         <main className="main">
             <section className="card users-container">
@@ -57,7 +103,7 @@ export default function UserSection() {
                 
                 {showFetchError && <FetchingError/>}
                
-               {showCreateEditUser && <CreateEditUser onClose={handleCloseButtonClick}/>}
+               {showCreateEditUser && <CreateEditUser onClose={handleCloseButtonClick} onSubmit={handleSubmitClick}/>}
 
                 <UserList
                     users={users}

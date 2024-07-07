@@ -1,5 +1,6 @@
 export default function CreateEditUser({
-    onClose
+    onClose,
+    onSubmit
 }) {
     return (
         <div className="overlay">
@@ -17,7 +18,7 @@ export default function CreateEditUser({
                 </svg>
                 </button>
             </header>
-            <form>
+            <form onSubmit={onSubmit}>
                 <div className="form-row">
                 <div className="form-group">
                     <label for="firstName">First name</label>
@@ -94,7 +95,7 @@ export default function CreateEditUser({
                 </div>
                 </div>
                 <div id="form-actions">
-                <button id="action-save" className="btn" type="submit">Save</button>
+                <button id="action-save" className="btn" type="submit" >Save</button>
                 <button id="action-cancel" className="btn" type="button" onClick={onClose}>
                     Cancel
                 </button>
