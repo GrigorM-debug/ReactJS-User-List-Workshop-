@@ -5,12 +5,19 @@ export default function UserList({
     users,
     onDelete,
     showUserDetails,
-    onEdit 
+    onEdit, 
+    onSort,
+    sortOrder,
+    sortField
 }) {
     return (
         <div className="table-wrapper">
             <table className="table">
-                <THead />
+                <THead 
+                    onSort={onSort} 
+                    sortField={sortField}
+                    sortOrder={sortOrder}
+                />
                 <tbody>
                     {users.map(user => (
                         <UserListItem

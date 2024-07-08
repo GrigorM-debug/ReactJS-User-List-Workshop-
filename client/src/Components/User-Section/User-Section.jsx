@@ -28,6 +28,8 @@ export default function UserSection() {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
     const [originalUsers, setOriginalUsers] = useState([]);
+    const [sortField, setSortField] = useState(null);
+    const [sortOrder, setSortOrder] = useState('asc');
 
     const fetchUsers = async () => {
         setIsLoading(true);
@@ -232,10 +234,30 @@ export default function UserSection() {
         setCurrentPage(pageNumber);
     }
 
+
     // Calculate indices for the current page
     const indexOfLastUser = currentPage * itemsPerPage;
     const indexOfFirstUser = indexOfLastUser - itemsPerPage;
     const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+    const handleSorting = (field) => {
+        setSortField(field);
+        const newSortOrder = (sortField === field && sortOrder === 'asc') ? 'desc' : 'asc';
+
+        setSortOrder(newSortOrder);
+
+        const sortedUsers = [...users].sort((a, b) => {
+            if (a[field] < b[field]) {
+                return newSortOrder === 'asc' ? -1 : 1;
+            }
+            if (a[field] > b[field]) {
+                return newSortOrder === 'asc' ? 1 : -1;
+            }
+            return 0;
+        });
+
+        setUsers(sortedUsers);
+    }
 
     return (
         <main className="main">
@@ -284,6 +306,9 @@ export default function UserSection() {
                     onDelete={handleDeleteClick}
                     onEdit={handleEditClick}
                     showUserDetails={handleUserDetails}
+                    onSort={handleSorting}
+                    sortField={sortField}
+                    sortOrder={sortOrder}
                 />
 
 
