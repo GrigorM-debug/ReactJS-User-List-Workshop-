@@ -24,9 +24,10 @@ export default function UserSection() {
     const [editingUser, setEditingUser] = useState(null);
     const [searchCriteria, setSearchCriteria] = useState('');
     const [seachValue, setSearchValue] = useState('');
-    const [filteredUsers, setFilteredUsers] = useState([]);
+    // const [filteredUsers, setFilteredUsers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [originalUsers, setOriginalUsers] = useState([]);
 
     const fetchUsers = async () => {
         setIsLoading(true);
@@ -39,6 +40,7 @@ export default function UserSection() {
                 setShowNoUsersYet(true);
             } else {
                 setUsers(usersData);
+                setOriginalUsers(usersData);
             }
         } catch (error) {
             setShowFetchError(true);
@@ -182,10 +184,14 @@ export default function UserSection() {
         setSearchCriteria(criteria);
     }
 
+    const handleSearchValue = (e) => {
+        setSearchValue(e.target.value);
+    }
+
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         
-        setSearchValue(e.target.value);
+        // setSearchValue(e.target.value);
 
         let filteredUsersArray = [];
 
@@ -196,7 +202,7 @@ export default function UserSection() {
         } else if (searchCriteria === 'email') {
             filteredUsersArray = users.filter(u => new RegExp(seachValue, 'i').test(u.email));
         } else if (searchCriteria === 'phone'){
-            filteredUsersArray = users.filter(u => new RegExp(seachValue, 'i').test(u.phone));
+            filteredUsersArray = users.filter(u => new RegExp(seachValue, 'i').test(u.phoneNumber));
         } 
         
         if(filteredUsersArray.length === 0) {
@@ -211,7 +217,7 @@ export default function UserSection() {
     }
 
     const searchCloseButtonHandler = () => {
-        setUsers(users)
+        setUsers(originalUsers)
         setSearchCriteria('');
         setSearchValue('');
     }
@@ -238,6 +244,7 @@ export default function UserSection() {
                     selectedCriteria={searchCriteria}
                     seachValue={seachValue}
                     onClose={searchCloseButtonHandler}
+                    handleSearchValue={handleSearchValue}
                 />
                 
                 {isLoading && <LoadingSpinner />}

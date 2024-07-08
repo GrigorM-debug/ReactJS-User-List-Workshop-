@@ -5,7 +5,8 @@ export default function Search({
     handleSearchSubmit,
     selectedCriteria,
     seachValue,
-    onClose
+    onClose,
+    handleSearchValue
 }) {
     return (
         <form className="search-form" onSubmit={handleSearchSubmit}>
@@ -33,13 +34,13 @@ export default function Search({
                 placeholder="Please, select the search criteria"
                 name="search"
                 value={seachValue}
-                onChange={handleSearchSubmit}
+                onChange={handleSearchValue}
                 />
         
                 {seachValue && <CloseButton onClose={onClose}/>}
 
                 <button className="btn" title="Please, select the search criteria">
-                <i className="fa-solid fa-magnifying-glass" />
+                <i className="fa-solid fa-magnifying-glass" onClick={handleSearchSubmit}/>
                 </button>
             </div>
             <div className="filter">
