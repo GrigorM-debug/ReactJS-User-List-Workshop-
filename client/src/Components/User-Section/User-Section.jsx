@@ -25,6 +25,8 @@ export default function UserSection() {
     const [searchCriteria, setSearchCriteria] = useState('');
     const [seachValue, setSearchValue] = useState('');
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
 
     const fetchUsers = async () => {
         setIsLoading(true);
@@ -117,44 +119,58 @@ export default function UserSection() {
         setIsLoading(true);
         try {
             if (editingUser) {
+                const updatedUser = {
+                    firstName: userData.firstName, 
+                    lastName: userData.lastName,
+                    email: userData.email,
+                    phoneNumber: userData.phoneNumber,
+                    imageUrl: userData.imageUrl,
+                    createdAt: userData.createdAt,
+                    updatedAt: new Date().toISOString(),
+                    address: {
+                        country: userData.country,
+                        city: userData.city,
+                        street: userData.street,
+                        streetNumber: userData.streetNumber
+                    }
+                }
+
                 await fetch(`${baseURL}/users/${editingUser._id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({...userData, 
-                        // createdAt: userData.createdAt,
-                        updatedAt: new Date().toISOString(),
-                        address: {
-                            country: userData.country,
-                            city: userData.city,
-                            street: userData.street,
-                            streetNumber: userData.streetNumber
-                        }
-                    }),
+                    body: JSON.stringify(updatedUser),
                 });
             } else {
+                const newUser = {
+                    firstName: userData.firstName, 
+                    lastName: userData.lastName,
+                    email: userData.email,
+                    phoneNumber: userData.phoneNumber,
+                    imageUrl: userData.imageUrl,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: null,
+                    address: {
+                        country: userData.country,
+                        city: userData.city,
+                        street: userData.street,
+                        streetNumber: userData.streetNumber
+                    }
+                }
                 await fetch(`${baseURL}/users`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({...userData, 
-                        createdAt: new Date().toISOString(),
-                        updatedAt: '',
-                        address: {
-                            country: userData.country,
-                            city: userData.city,
-                            street: userData.street,
-                            streetNumber: userData.streetNumber
-                        }
-                    }),
+                    body: JSON.stringify(newUser),
                 });
             }
             await fetchUsers();
             setShowCreateEditUser(false);
         } catch (error) {
             console.error('Error submitting form:', error);
+            setShowFetchError(true);
         } finally {
             setIsLoading(false);
         }
@@ -200,6 +216,19 @@ export default function UserSection() {
         setSearchValue('');
     }
 
+    const handleItemsPerPage = (e) => {
+        setItemsPerPage(Number(e.target.value));
+    }
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    }
+
+    // Calculate indices for the current page
+    const indexOfLastUser = currentPage * itemsPerPage;
+    const indexOfFirstUser = indexOfLastUser - itemsPerPage;
+    const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
     return (
         <main className="main">
             <section className="card users-container">
@@ -242,7 +271,7 @@ export default function UserSection() {
                 )}
 
                 <UserList
-                    users={users}
+                    users={currentUsers}
                     onDelete={handleDeleteClick}
                     onEdit={handleEditClick}
                     showUserDetails={handleUserDetails}
@@ -253,7 +282,13 @@ export default function UserSection() {
                     Add new user
                 </button>
 
-                <Pagination />
+                <Pagination 
+                    handleItemsPerPage={handleItemsPerPage}
+                    postPerPage={itemsPerPage}
+                    length={users.length}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                />
             </section>
         </main>
     );
