@@ -104,6 +104,7 @@ export default function UserSection() {
     };
 
     const handleEditClick = (user) => {
+        console.log(user)
         setShowCreateEditUser(true);
         setEditingUser(user)
     };
@@ -122,6 +123,7 @@ export default function UserSection() {
         try {
             if (editingUser) {
                 const updatedUser = {
+                    _id: userData._id,
                     firstName: userData.firstName, 
                     lastName: userData.lastName,
                     email: userData.email,

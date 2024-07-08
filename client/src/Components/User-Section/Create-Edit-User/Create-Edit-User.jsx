@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function CreateEditUser({ onClose, onSubmit, user }) {
     const [formData, setFormData] = useState({
+        _id: '',
         firstName: '',
         lastName: '',
         email: '',
@@ -18,6 +19,7 @@ export default function CreateEditUser({ onClose, onSubmit, user }) {
         //if we have user it means that we are editing. so we populated the data for the user we are editing
         if (user) {
             setFormData({
+                _id: user._id,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
